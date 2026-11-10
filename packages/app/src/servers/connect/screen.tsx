@@ -6,6 +6,7 @@ import { useLanguage } from "@/runtime/i18n/language"
 import { createServerConnectController } from "./controller"
 import { ConnectMethodSwitch } from "./method"
 import "./screen.css"
+import { IS_SQUARE_AGENT, PRODUCT_LOGO, PRODUCT_NAME } from "@/brand"
 
 const PairingScanner = lazy(() => import("./scanner").then((module) => ({ default: module.PairingScanner })))
 
@@ -18,8 +19,10 @@ export function ConnectServerScreen(props: { url?: string } = {}) {
   return (
     <main data-component="connect-server" aria-labelledby="server-connect-title">
       <div class="server-connect-content">
-        <div class="server-connect-brand" role="img" aria-label="OpenCode">
-          <Wordmark />
+        <div class="server-connect-brand" role="img" aria-label={PRODUCT_NAME}>
+          <Show when={IS_SQUARE_AGENT} fallback={<Wordmark />}>
+            <img src={PRODUCT_LOGO} alt="" class="mx-auto size-20 object-contain" />
+          </Show>
         </div>
         <header>
           <h1 id="server-connect-title">{language.t("server.connect.title")}</h1>

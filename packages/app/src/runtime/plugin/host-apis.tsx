@@ -38,6 +38,7 @@ import {
 } from "@opencode/plugin/gui"
 import { BuiltinPanel, type BuiltinStoreFrom, type BuiltinStoreOptions } from "@opencode/plugin/gui/builtin"
 import { usePlatform } from "@/runtime/platform/platform"
+import { IS_SQUARE_AGENT } from "@/brand"
 import { same } from "@/runtime/persistence/equality"
 import { Persist, persisted, removePersisted } from "@/runtime/persistence/storage"
 import { useGlobal, type ServerCtx } from "@/runtime/server/runtime"
@@ -349,7 +350,7 @@ export function createHostApis() {
           }
         : undefined,
     app: () => ({
-      name: "opencode",
+      name: IS_SQUARE_AGENT ? "square-agent" : "opencode",
       version: platform.version ?? "",
       // SAFETY: the build sets VITE_OPENCODE_CHANNEL to one of the release channels, or leaves it unset locally.
       channel: (import.meta.env.VITE_OPENCODE_CHANNEL ?? "local") as App["channel"],

@@ -1,3 +1,17 @@
+# Square Agent
+
+<img src="packages/app/src/assets/square-agent-display.png" alt="Square Agent" width="128" />
+
+Square Agent is an independent desktop fork of [OpenCode](https://github.com/anomalyco/opencode), based on commit `8656f3048d03cc3e8050b3533db9495f52e50677` (2.2.7). It is not affiliated with or endorsed by OpenCode or Anomaly Innovations, Inc. The MIT license and upstream copyright remain applicable. Availability of the name as a trademark has not been verified.
+
+**Local Linux validation build, not a verified release:** Linux x64 deb/AppImage packages have been built. The packaged Electron app has been exercised with an isolated profile, light/dark branding, legal notices, a session, a harmless command and a repository diff. Windows NSIS packaging is prepared but has not been built or tested. See [desktop build instructions and compatibility audit](packages/desktop/README.md). No Square Agent update server is configured; automatic binary updates are disabled. No existing OpenCode data is migrated.
+
+The supplied source image is retained byte-for-byte (the accompanying request described blue, but the supplied pixels are orange). It has an existing alpha channel; display icons composite that transparency onto the requested black canvas, without redrawing or recoloring the foreground. Internal OpenCode APIs and provider names remain unchanged for compatibility.
+
+## Upstream OpenCode documentation
+
+The following is retained upstream documentation. Its installation commands install **OpenCode**, not Square Agent.
+
 <p align="center">
   <a href="https://opencode.ai">
     <picture>

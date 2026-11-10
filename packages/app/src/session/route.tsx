@@ -1,5 +1,6 @@
 import { ErrorBoundary, createEffect, createMemo, Match, on, Show, Switch, type ParentProps } from "solid-js"
 import { Title } from "@solidjs/meta"
+import { PRODUCT_NAME } from "@/brand"
 import { useParams } from "@solidjs/router"
 import { createStore } from "solid-js/store"
 import { makeEventListener } from "@solid-primitives/event-listener"
@@ -290,7 +291,7 @@ function SessionDocumentTitle(props: { title: () => string | undefined }) {
   // Keyed: <Title> reads its text inside a meta effect, which would hit a stale Show accessor once the session is deleted.
   return (
     <Show when={props.title()} keyed>
-      {(value) => <Title>{`${value} · OpenCode`}</Title>}
+      {(value) => <Title>{`${value} · ${PRODUCT_NAME}`}</Title>}
     </Show>
   )
 }

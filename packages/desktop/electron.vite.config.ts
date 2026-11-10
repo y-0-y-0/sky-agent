@@ -116,6 +116,9 @@ export default defineConfig(async ({ command }) => {
         bundledDev: true,
       },
       define: {
+        "import.meta.env.VITE_SQUARE_AGENT": JSON.stringify("1"),
+        // The fork has no authorized error-reporting destination.
+        "import.meta.env.VITE_SENTRY_DSN": JSON.stringify(""),
         "import.meta.env.OPENCODE_VERSION": JSON.stringify(process.env.OPENCODE_VERSION),
         "import.meta.env.VITE_OPENCODE_CHANNEL": JSON.stringify(channel),
         "import.meta.env.OPENCODE_COMMIT": betaNotes ? JSON.stringify(betaNotes.sha) : "undefined",

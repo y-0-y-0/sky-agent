@@ -879,6 +879,10 @@ export const dict = {
   "settings.about.devVersion": "development",
   "settings.about.copyVersionFailed": "Failed to copy version",
   "settings.about.license": "Released under the MIT License",
+  "settings.about.fork":
+    "Square Agent is an independent fork of OpenCode. It is not affiliated with or endorsed by OpenCode or Anomaly Innovations, Inc.",
+  "settings.about.manualUpdates":
+    "Automatic updates are disabled. Install updates manually from a trusted Square Agent build.",
   "settings.about.writtenByNames": "Written by {{names}}",
   "settings.about.illustratedByNames": "Illustrated by {{names}}",
   "settings.about.otherContributor.one": "{{count}} other",

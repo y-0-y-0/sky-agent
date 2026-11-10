@@ -1,4 +1,5 @@
 import { Logo } from "@opencode/ui/logo"
+import { IS_SQUARE_AGENT, PRODUCT_LOGO, PRODUCT_NAME } from "@/brand"
 import { prefersReducedMotion } from "@opencode/ui/motion"
 import { type Accessor, createEffect, For, onCleanup, onMount, Show } from "solid-js"
 import { PinSound } from "./pin-sound"
@@ -177,7 +178,13 @@ export function NewSessionWordmark(props: {
         data-slot="wordmark-box"
         class="relative mx-auto aspect-[234/42] w-4/5"
       >
-        <Show when={lodger}>
+        <Show when={IS_SQUARE_AGENT}>
+          <div class="flex size-full items-center justify-center gap-4">
+            <img src={PRODUCT_LOGO} alt="" class="h-full aspect-square object-contain" />
+            <span class="text-2xl">{PRODUCT_NAME}</span>
+          </div>
+        </Show>
+        <Show when={!IS_SQUARE_AGENT && lodger}>
           <WordmarkLodger
             box={box}
             sound={props.sound ?? (() => false)}

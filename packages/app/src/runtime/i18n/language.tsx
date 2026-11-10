@@ -16,6 +16,7 @@ import { Persist, persisted } from "@/runtime/persistence/storage"
 import { Persistence } from "@/runtime/persistence/schema"
 import en from "@/runtime/i18n/en"
 import { dict } from "@opencode/ui/i18n/en"
+import { productMessage } from "@/brand"
 import {
   createDesktopNativeBundle,
   detectDesktopNativeLocale,
@@ -328,7 +329,7 @@ export const { use: useLanguage, provider: LanguageProvider } = createSimpleCont
       const template: string | undefined = dictionary()[key]
 
       // A key outside the dictionary translates to nothing, as it did with the package translator.
-      return template === undefined ? template : resolveTemplate(template, params)
+      return template === undefined ? template : resolveTemplate(productMessage(key, template), params)
     }
 
     const pluralForm = (
@@ -403,7 +404,7 @@ export const { use: useLanguage, provider: LanguageProvider } = createSimpleCont
       const current = dictionary()
 
       props.onNativeTranslations(
-        createDesktopNativeBundle(locale(), (key) => current[key] ?? DESKTOP_NATIVE_ENGLISH[key]),
+        createDesktopNativeBundle(locale(), (key) => productMessage(key, current[key] ?? DESKTOP_NATIVE_ENGLISH[key])),
       )
     })
 

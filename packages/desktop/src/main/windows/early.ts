@@ -6,6 +6,7 @@ import { resolveExternalURL } from "../files/external-url"
 import { windowArguments } from "./bootstrap"
 import { WINDOW_IDS_KEY } from "../storage/keys"
 import { getStore } from "../storage/store"
+import { APP_NAME } from "../constants"
 import { platformFrame, storedBackgroundColor, storedZoomLevel, tone } from "./defaults"
 import {
   initialEarlyWindowState,
@@ -95,7 +96,7 @@ export function createEarlyWindow() {
     height: state.height,
     show: !deferReveal,
     autoHideMenuBar: true,
-    title: "OpenCode",
+    title: APP_NAME,
     icon: path.join(icons, `icon.${process.platform === "win32" ? "ico" : "png"}`),
     backgroundColor: storedBackgroundColor(),
     ...platformFrame(tone(), zoom),

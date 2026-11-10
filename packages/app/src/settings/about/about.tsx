@@ -1,4 +1,4 @@
-import { createEffect, createMemo, createResource, createSignal, onCleanup, untrack } from "solid-js"
+import { createEffect, createMemo, createResource, createSignal, onCleanup, Show, untrack } from "solid-js"
 import { writeClipboard } from "@opencode/session-ui/copy"
 import { useDialog } from "@opencode/ui/context/dialog"
 import { Tooltip } from "@opencode/ui/tooltip"
@@ -9,6 +9,7 @@ import { showToast } from "@/shell/notifications/toast"
 import legal from "./legal.svg"
 import anomalyBrush from "./anomaly-brush.svg"
 import { AnimatedWordmark } from "./animated-wordmark"
+import { IS_SQUARE_AGENT, PRODUCT_LOGO, PRODUCT_NAME } from "@/brand"
 import { FALLBACK_OTHER_CONTRIBUTORS, loadOtherContributorCount } from "./contributors"
 import {
   INITIAL_ABOUT_COPY_STATE,
@@ -80,7 +81,9 @@ export function SettingsAbout(props: { active: boolean }) {
     const attempt = effect.attempt
     // Plain-HTTP LAN origins have no `navigator.clipboard`; `writeClipboard` falls back to a selected textarea there.
     void Promise.try(() =>
-      platform.writeClipboardText ? platform.writeClipboardText(effect.text).then(() => true) : writeClipboard(effect.text),
+      platform.writeClipboardText
+        ? platform.writeClipboardText(effect.text).then(() => true)
+        : writeClipboard(effect.text),
     ).then(
       (written) => dispatchCopy({ type: written ? "copy.succeeded" : "copy.failed", attempt }),
       () => dispatchCopy({ type: "copy.failed", attempt }),
@@ -147,7 +150,14 @@ export function SettingsAbout(props: { active: boolean }) {
         <p>{language.t("settings.about.license")}</p>
       </div>
 
-      <AnimatedWordmark active={props.active} />
+      <Show when={IS_SQUARE_AGENT} fallback={<AnimatedWordmark active={props.active} />}>
+        <div class="flex items-center justify-center gap-3">
+          <img src={PRODUCT_LOGO} alt="" class="size-16 object-contain" />
+          <span class="text-xl">{PRODUCT_NAME}</span>
+        </div>
+        <p>{language.t("settings.about.fork")}</p>
+        <p>{language.t("settings.about.manualUpdates")}</p>
+      </Show>
 
       <div class="settings-about-credits">
         <p>{language.rich("settings.about.writtenByNames", { names: language.list(writerCredits()) })}</p>

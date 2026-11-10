@@ -39,11 +39,19 @@ const decodeLegacy = Schema.decodeUnknownOption(
 const decodeRegistration = Schema.decodeUnknownEffect(Schema.fromJsonString(Service.Info))
 
 export function filename(channel = OPENCODE_CHANNEL) {
+  // Desktop discovery always reads service.json inside its private XDG state root, regardless of CLI build channel.
+  if (process.env.SQUARE_AGENT_SERVICE === "1") return "service.json"
   if (channel === "latest" || channel === "dev" || channel === "beta" || channel === "next") return "service.json"
   return `service-${channel.replace(/[^a-zA-Z0-9._-]/g, "-")}.json`
 }
 
 export function defaultPort(channel = OPENCODE_CHANNEL, platform = process.platform) {
+  // Pairing also starts through `service start`, not only Desktop's direct `serve --port` command.
+  if (process.env.SQUARE_AGENT_SERVICE === "1") {
+    const port = Number(process.env.SQUARE_AGENT_SERVICE_PORT)
+    if (!Number.isInteger(port) || port < 1 || port > 65_535) throw new Error("Invalid Square Agent service port")
+    return port
+  }
   const port = channelPort(channel)
   // Windows hands out 0xC000-0xFFFF for outgoing connections, Hyper-V and WinNAT reserve blocks of that range at boot,
   // and WSL mirrored networking reserves a 4096-port block that usually covers 44620-48715. A reserved port fails as in

@@ -10,7 +10,8 @@ const setup: Plugin.MainSetup = async (ctx) => {
   const builtin = builtinMainContext(ctx)
   const build = ctx.app
   const lifecycle = builtin.lifecycle
-  const enabled = build.packaged
+  // Independent forks have no authority to install OpenCode's official binaries.
+  const enabled = build.packaged && build.name === "opencode"
   // Holds no resources, so it needs no cleanup.
   const context = logContext(ctx.log.write)
   const runPromise = Effect.runPromiseWith(context)

@@ -1,4 +1,10 @@
-# Tauri Icons
+# Square Agent Windows/Linux icons
+
+The canonical source is `packages/app/src/assets/square-agent.png`, copied byte-for-byte from the supplied attachment. Its orange and white colors, existing alpha channel and square proportions are preserved. Do not redraw or recolor it. The source's alpha was discovered during validation; generated icons composite it onto the requested black canvas instead of introducing transparency.
+
+From `packages/desktop`, `bun run script/copy-icons.ts` uses ImageMagick (`magick`) to generate opaque PNGs from 16 to 1024 pixels, `icon.png`, `dock.png` and a seven-frame Windows `icon.ico` in `resources/icons/`, plus the checked-in `packages/app/src/assets/square-agent-display.png` for the renderer. Every channel uses this source. Generated resources are rebuilt, not the source of truth. Windows/Linux packaging uses these paths; no Square Agent macOS ICNS is generated.
+
+## Historical upstream macOS process
 
 Here's the process I've been using to create icons:
 

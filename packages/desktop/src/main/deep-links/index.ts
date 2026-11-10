@@ -6,6 +6,7 @@ import { DeepLinksOpened } from "../../shared/ipc-rpc/events"
 import { emitIpcEvent } from "../ipc-events"
 import { getWindowByID, onMainWindow } from "../windows"
 import { createDeepLinkState, transitionDeepLinks, type DeepLinkEvent } from "./machine"
+import { normalizeDeepLink } from "../lifecycle/deep-link"
 
 export interface Interface {
   readonly receive: (urls: readonly string[]) => void
@@ -44,7 +45,7 @@ export const make = Effect.fn("DeepLinks.make")(function* (focus: (win: BrowserW
   yield* Effect.addFinalizer(() => Effect.sync(stop))
 
   return {
-    receive: (urls) => dispatch({ type: "links.received", urls }),
+    receive: (urls) => dispatch({ type: "links.received", urls: urls.map(normalizeDeepLink) }),
     ready: (windowID, clientID) => dispatch({ type: "window.ready", windowID, clientID }),
     acknowledge: (clientID, attempt) => dispatch({ type: "delivery.acknowledged", clientID, attempt }),
     disconnect: (clientID) => dispatch({ type: "client.disconnected", clientID }),

@@ -1,16 +1,20 @@
 import { $ } from "bun"
-import { resolveChannel } from "./utils"
+import { mkdir } from "node:fs/promises"
+import path from "node:path"
 
-const arg = process.argv[2]
+// Preserve the supplied RGBA source; composite its existing alpha onto the requested black canvas.
+const source = path.resolve(import.meta.dir, "../../app/src/assets/square-agent.png")
+const dest = path.resolve(import.meta.dir, "../resources/icons")
 
-const channel = arg === "dev" || arg === "beta" || arg === "prod" ? arg : resolveChannel()
+await mkdir(dest, { recursive: true })
 
-const src = `./icons/${channel}`
+for (const size of [16, 24, 32, 48, 64, 96, 128, 180, 256, 512, 1024]) {
+  await $`magick ${source} -background black -alpha remove -alpha off -resize ${`${size}x${size}`} ${path.join(dest, `${size}x${size}.png`)}`
+}
 
-const dest = "resources/icons"
+await $`magick ${source} -background black -alpha remove -alpha off -resize 512x512 ${path.join(dest, "icon.png")}`
+await $`magick ${source} -background black -alpha remove -alpha off -resize 256x256 ${path.join(dest, "dock.png")}`
+await $`magick ${source} -background black -alpha remove -alpha off -define icon:auto-resize=256,128,64,48,32,24,16 ${path.join(dest, "icon.ico")}`
+await $`magick ${source} -background black -alpha remove -alpha off -resize 512x512 ${path.resolve(import.meta.dir, "../../app/src/assets/square-agent-display.png")}`
 
-await $`rm -rf ${dest}`
-
-await $`cp -R ${src} ${dest}`
-
-console.log(`Copied ${channel} icons from ${src} to ${dest}`)
+console.log(`Generated Square Agent Windows/Linux icons from ${source} in ${dest}`)

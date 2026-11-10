@@ -3,7 +3,7 @@ import { validateRoutes } from "@opentunnel/client/effect"
 import { Service, type Info } from "@opencode/client/effect/service"
 import { Global } from "@opencode/util/global"
 import { OPENCODE_VERSION } from "../src/version"
-import { expect, test } from "bun:test"
+import { afterEach, beforeEach, expect, test } from "bun:test"
 import { Deferred, Effect, FileSystem, Schedule, Schema } from "effect"
 import { NetAddress } from "effect/net"
 import { TestClock } from "effect/testing"
@@ -19,6 +19,22 @@ import { isolatedEnv, transpilerCache } from "./fixture/environment"
 import { testEffect } from "../../core/test/lib/effect"
 
 const it = testEffect(NodeFileSystem.layer)
+const forkEnv = {
+  SQUARE_AGENT_SERVICE: process.env.SQUARE_AGENT_SERVICE,
+  SQUARE_AGENT_SERVICE_PORT: process.env.SQUARE_AGENT_SERVICE_PORT,
+}
+
+beforeEach(() => {
+  delete process.env.SQUARE_AGENT_SERVICE
+  delete process.env.SQUARE_AGENT_SERVICE_PORT
+})
+
+afterEach(() => {
+  for (const [key, value] of Object.entries(forkEnv)) {
+    if (value === undefined) delete process.env[key]
+    else process.env[key] = value
+  }
+})
 
 test("managed service ports are stable per installation channel", () => {
   expect(ServiceConfig.defaultPort("latest", "linux")).toBe(0xc0de)
@@ -29,6 +45,22 @@ test("managed service ports are stable per installation channel", () => {
   expect(ServiceConfig.defaultPort("latest", "darwin")).toBe(0xc0de)
   expect(ServiceConfig.defaultPort("preview-a", "linux")).toBe(ServiceConfig.defaultPort("preview-a", "linux"))
   expect(ServiceConfig.defaultPort("preview-a", "linux")).not.toBe(ServiceConfig.defaultPort("preview-b", "linux"))
+})
+
+test("desktop forks keep discovery and managed restarts on their private service identity", () => {
+  process.env.SQUARE_AGENT_SERVICE = "1"
+  for (const [channel, port] of [
+    ["prod", 27421],
+    ["beta", 27422],
+    ["square-agent", 27423],
+  ] as const) {
+    process.env.SQUARE_AGENT_SERVICE_PORT = String(port)
+    expect(ServiceConfig.filename(channel)).toBe("service.json")
+    expect(ServiceConfig.defaultPort(channel, "linux")).toBe(port)
+    expect(ServiceConfig.defaultPort(channel, "win32")).toBe(port)
+  }
+  process.env.SQUARE_AGENT_SERVICE_PORT = "invalid"
+  expect(() => ServiceConfig.defaultPort()).toThrow("Invalid Square Agent service port")
 })
 
 test("managed service ports on Windows stay below the ranges Windows and WSL reserve", () => {

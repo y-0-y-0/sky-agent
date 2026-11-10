@@ -5,8 +5,9 @@ import { homedir, tmpdir } from "node:os"
 import path from "node:path"
 import { app } from "electron"
 import { debugBuild, memoryLogInterval } from "@opencode/gui-plugins/debug/options"
-import { APP_ID, APP_NAME, CHANNEL } from "../constants"
+import { APP_ID, APP_NAME, BRAND, CHANNEL } from "../constants"
 import { remoteDebuggingPort } from "../diagnostics/options"
+import { configureServiceProfile } from "../service/profile"
 
 const testOnboarding = process.env.OPENCODE_TEST_ONBOARDING === "1"
 
@@ -43,14 +44,22 @@ export function configureApplication() {
   if (debugBuild(build) && memoryLogInterval(process.env.OPENCODE_DESKTOP_MEMORY_LOG) !== undefined)
     app.commandLine.appendSwitch("enable-precise-memory-info")
 
+  // app.relaunch inherits the service's XDG_CONFIG_HOME. Keep Electron's original root across launches.
+  const appData = process.env.SQUARE_AGENT_APP_DATA ?? app.getPath("appData")
+  process.env.SQUARE_AGENT_APP_DATA = appData
+  app.setPath("appData", appData)
   const testRoot = createTestRoot()
-  app.setPath("userData", testRoot ? path.join(testRoot, "desktop") : path.join(app.getPath("appData"), APP_ID))
+  app.setPath("userData", testRoot ? path.join(testRoot, "desktop") : path.join(appData, APP_ID))
 
   if (testRoot) {
     app.setPath("sessionData", path.join(testRoot, "session"))
 
     if (testOnboarding) app.setPath("documents", path.join(testRoot, "documents"))
   }
+
+  configureServiceProfile(app.getPath("userData"), BRAND.port)
+
+  if (testOnboarding) process.env.OPENCODE_DB = ":memory:"
 
   // V8 bytecode for the main bundle survives between launches, like the renderer's code cache.
   enableCompileCache(path.join(app.getPath("userData"), "compile-cache"))

@@ -13,9 +13,19 @@ import { CLI_BINARIES, nodePtyPackage } from "./script/utils"
 const { FileMatcher } = createRequire(import.meta.resolve("electron-builder"))("app-builder-lib/out/fileMatcher")
 
 const channels = [
-  { channel: "dev", appId: "ai.opencode.desktop.dev", feed: "dev" },
-  { channel: "beta", appId: "ai.opencode.desktop.beta", feed: "beta" },
-  { channel: "prod", appId: "ai.opencode.desktop", feed: "latest" },
+  {
+    channel: "dev",
+    appId: "io.github.y0y0.squareagent.dev",
+    packageName: "square-agent-dev",
+    productName: "Square Agent Dev",
+  },
+  {
+    channel: "beta",
+    appId: "io.github.y0y0.squareagent.beta",
+    packageName: "square-agent-beta",
+    productName: "Square Agent Beta",
+  },
+  { channel: "prod", appId: "io.github.y0y0.squareagent", packageName: "square-agent", productName: "Square Agent" },
 ] as const
 
 function load(channel: string, target?: string): Configuration {
@@ -47,20 +57,20 @@ function trimFilter(dir: string, config: Configuration) {
   ]).createFilter()
 }
 
-test.each(channels)("channel identity for $channel", ({ channel, appId, feed }) => {
+test.each(channels)("channel identity for $channel", ({ channel, appId, packageName, productName }) => {
   const config = load(channel)
   expect(config.appId).toBe(appId)
-  // Every published channel updates from its own feed on the update service.
-  expect(config.publish).toEqual({
-    provider: "generic",
-    url: `https://opencode.ai/update/api/${feed}/desktop/opencode/`,
-    channel: "latest",
-  })
+  expect(config.productName).toBe(productName)
+  // No fork channel may discover or install official OpenCode updates.
+  expect(config.publish).toBeNull()
+  expect(config.protocols).toEqual({ name: productName, schemes: [packageName] })
+  expect(config.deb?.packageName).toBe(packageName)
+  expect(config.rpm?.packageName).toBe(packageName)
   expect(config.extraMetadata?.desktopName).toBe(`${appId}.desktop`)
   // The executable must never end in `.desktop`: libappimage resolves the
   // AppImage's desktop entry by globbing `*.desktop`, and an ELF matching
   // that glob breaks integration (anomalyco/opencode#51867).
-  expect(config.linux?.executableName).toBe(appId.replace(/\.desktop$/, ""))
+  expect(config.linux?.executableName).toBe(packageName)
   expect(config.linux?.executableName).not.toMatch(/\.desktop$/)
   // The installed `.desktop` filename still derives from `desktopName` so
   // window association (StartupWMClass/desktop file basename) is unchanged.
@@ -71,7 +81,7 @@ test.each(channels)("channel identity for $channel", ({ channel, appId, feed }) 
     expect(fpm).toContainEqual(expect.stringContaining(`/usr/share/metainfo/${appId}.metainfo.xml`))
     expect(
       fpm?.some((entry) => entry.endsWith("opencode-desktop.desktop=/usr/share/applications/opencode-desktop.desktop")),
-    ).toBe(channel === "prod")
+    ).toBe(false)
   }
 
   // Shared Electron binaries must not ship /usr/lib/.build-id links that collide with other Electron RPMs.
@@ -90,9 +100,9 @@ test("legacy Linux launcher stays hidden", async () => {
 
 test.each(channels)("macOS bundle for $channel", ({ channel }) => {
   const config = load(channel)
-  expect(config.mac?.icon).toBe(channel === "prod" ? "resources/icons/icon.icon" : "resources/icons/icon.icns")
-  expect(config.dmg?.icon).toBe(channel === "prod" ? "resources/icons/icon.icns" : undefined)
-  // The prod override must keep the rest of the shared macOS settings.
+  expect(config.mac?.icon).toBe("resources/icons/icon.icns")
+  expect(config.dmg?.icon).toBeUndefined()
+  // Replacing the upstream icon must keep the shared macOS settings.
   expect(config.mac?.target).toEqual(["dmg", "zip"])
 
   for (const key of [
@@ -127,6 +137,7 @@ test("shared packaging defaults", async () => {
   expect(config.files).toContain("!resources/opencode-cli*")
   expect(config.extraResources).toEqual([
     { from: "resources/", to: "", filter: ["opencode-cli", "opencode-cli.exe", "opencode-cli.version"] },
+    { from: path.join(import.meta.dirname, "../../LICENSE"), to: "LICENSE-OpenCode.txt" },
   ])
 })
 

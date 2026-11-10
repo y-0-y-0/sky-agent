@@ -2,7 +2,7 @@ import { app } from "electron"
 import type { Endpoint } from "@opencode/client/service"
 import { Context, Effect, FileSystem, Layer, Option, Path, Schema } from "effect"
 import { SidecarChanged } from "../../shared/ipc-rpc/events"
-import { CHANNEL } from "../constants"
+import { BRAND, CHANNEL } from "../constants"
 import { emitIpcEvent } from "../ipc-events"
 import { getMainWindows } from "../windows"
 import { BackgroundServiceMachine } from "./background-service-machine"
@@ -64,12 +64,7 @@ const ensure = Effect.fn("BackgroundService.ensure")(function* (mode: Background
       version,
       // A fixed port makes a second contender fail to bind and back off; port 0 never collides, so two
       // services could boot against the same database.
-      command: [
-        ...setup.cli.command,
-        "serve",
-        "--service",
-        ...(setup.isolated ? ["--hostname", "0.0.0.0", "--port", String(0x0c0c)] : []),
-      ],
+      command: [...setup.cli.command, "serve", "--service", "--hostname", "127.0.0.1", "--port", String(BRAND.port)],
       onStart: (reason, previousVersion) =>
         runFork(Effect.logInfo("v2 CLI background service starting", { reason, previousVersion })),
     })
@@ -99,23 +94,15 @@ const ensure = Effect.fn("BackgroundService.ensure")(function* (mode: Background
 
 const prepare = Effect.fn("BackgroundService.prepare")(function* (mode: BackgroundServiceMachine.ConnectMode) {
   yield* Effect.logInfo("starting v2 background service")
-  const path = yield* Path.Path
   const desktopCli = yield* DesktopCli.Service
   const isolated = !app.isPackaged && process.env.OPENCODE_DESKTOP_ISOLATED_SERVER === "1"
   const cli = yield* desktopCli.resolve
   const version = serviceVersion({ channel: CHANNEL, isolated, mode, version: cli.version })
 
-  if (isolated) process.env.XDG_STATE_HOME = app.getPath("userData")
   const client = yield* Effect.promise(() => import("@opencode/client/service"))
 
-  const file =
-    process.env.OPENCODE_DESKTOP_SERVER_CHANNEL === "local"
-      ? path.join(
-          process.env.XDG_STATE_HOME ?? path.join(app.getPath("home"), ".local", "state"),
-          "opencode",
-          "service-local.json",
-        )
-      : undefined
+  // The fork CLI also uses service.json for local/source builds inside this private root.
+  const file = client.fallback()
 
   return { cli, client, file, isolated, version }
 })

@@ -17,6 +17,8 @@ export function isolatedEnv(root: string, overrides: Record<string, string | und
     OPENCODE_DISABLE_FILEWATCHER: "true",
     OPENCODE_DISABLE_MODELS_FETCH: "true",
     OPENCODE_TEST_HOME: root,
+    SQUARE_AGENT_SERVICE: undefined,
+    SQUARE_AGENT_SERVICE_PORT: undefined,
     XDG_CACHE_HOME: path.join(root, "cache"),
     XDG_CONFIG_HOME: path.join(root, "xdg-config"),
     XDG_DATA_HOME: path.join(root, "data"),

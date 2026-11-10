@@ -26,7 +26,13 @@ export function setNativeTranslations(next: DesktopNativeBundle) {
 }
 
 export function nativeT(key: DesktopNativeKey, params?: Record<string, string | number>) {
-  return formatDesktopNativeMessage(bundle.messages[key], params)
+  // The documentation entry still names the upstream documentation it opens.
+  const template =
+    key === "desktop.menu.documentation"
+      ? bundle.messages[key]
+      : bundle.messages[key].replaceAll("OpenCode", "Square Agent")
+
+  return formatDesktopNativeMessage(template, params)
 }
 
 /** Language tags with their names in the app locale, sorted for a menu. */

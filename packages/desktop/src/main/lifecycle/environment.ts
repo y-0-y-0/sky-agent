@@ -8,6 +8,8 @@ import { registerRendererProtocol, setDockIcon, setProtocolReporter } from "../w
 import { scoped } from "../native/logging"
 import { applySpellcheck, spellcheckMenuItems } from "../native/spellcheck"
 import { nativeT } from "../native/translations"
+import { BRAND } from "../constants"
+import { configureServiceProfile } from "../service/profile"
 
 // electron-context-menu attaches to every existing and future window, so it can load once the first
 // window is up instead of holding up startup with its dependency tree.
@@ -52,6 +54,9 @@ export const preferApplicationEnvironment = Effect.gen(function* () {
       OPENCODE_EXPERIMENTAL_FILEWATCHER: "true",
       OPENCODE_CLIENT: "desktop",
     })
+    configureServiceProfile(app.getPath("userData"), BRAND.port)
+
+    if (process.env.OPENCODE_TEST_ONBOARDING === "1") process.env.OPENCODE_DB = ":memory:"
   })
 })
 
@@ -60,7 +65,7 @@ export const prepareDesktop = Effect.gen(function* () {
   const paths = yield* DesktopPaths.resolve
 
   if (app.isPackaged || process.env.OPENCODE_DESKTOP_DISABLE_PROTOCOL_REGISTRATION !== "1")
-    app.setAsDefaultProtocolClient("opencode")
+    app.setAsDefaultProtocolClient(BRAND.protocol)
   const runFork = Effect.runForkWith(yield* Effect.context())
   setProtocolReporter((level, message, data) =>
     runFork(scoped("protocol", level === "error" ? Effect.logError(message, data) : Effect.logWarning(message, data))),
