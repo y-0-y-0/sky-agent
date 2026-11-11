@@ -37,7 +37,7 @@ if (app) {
   // The installer uses the channel's icons; the rest of the app is already built and signed.
   await $`bun ./script/copy-icons.ts ${resolveChannel()}`
   await $`bun run electron-builder ${flags} --prepackaged ${app}`
-  await cp(`dist/${brand.packageName}-win-${cli.cpu}.exe`, path.join(out, `${brand.packageName}-win-${cli.cpu}.exe`))
+  await cp(`dist/${brand.artifacts}-win-${cli.cpu}.exe`, path.join(out, `${brand.artifacts}-win-${cli.cpu}.exe`))
 }
 
 if (!app && os === "linux") {

@@ -2,7 +2,7 @@ export const IS_SQUARE_AGENT = import.meta.env.VITE_SQUARE_AGENT === "1"
 
 export const PRODUCT_NAME = IS_SQUARE_AGENT ? "Sky Agent" : "OpenCode"
 
-export const PRODUCT_LOGO = new URL("./assets/square-agent-display.png", import.meta.url).href
+export const PRODUCT_LOGO = new URL("./assets/sky-agent-display.png", import.meta.url).href
 
 // Only product copy is rebranded. Provider names, server diagnostics, URLs and legal attribution stay upstream.
 const productKeys = new Set([
