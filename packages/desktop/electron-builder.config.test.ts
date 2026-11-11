@@ -17,15 +17,23 @@ const channels = [
     channel: "dev",
     appId: "io.github.y0y0.squareagent.dev",
     packageName: "square-agent-dev",
+    artifacts: "sky-agent-dev",
     productName: "Sky Agent Dev",
   },
   {
     channel: "beta",
     appId: "io.github.y0y0.squareagent.beta",
     packageName: "square-agent-beta",
+    artifacts: "sky-agent-beta",
     productName: "Sky Agent Beta",
   },
-  { channel: "prod", appId: "io.github.y0y0.squareagent", packageName: "square-agent", productName: "Sky Agent" },
+  {
+    channel: "prod",
+    appId: "io.github.y0y0.squareagent",
+    packageName: "square-agent",
+    artifacts: "sky-agent",
+    productName: "Sky Agent",
+  },
 ] as const
 
 function load(channel: string, target?: string): Configuration {
@@ -57,10 +65,12 @@ function trimFilter(dir: string, config: Configuration) {
   ]).createFilter()
 }
 
-test.each(channels)("channel identity for $channel", ({ channel, appId, packageName, productName }) => {
+test.each(channels)("channel identity for $channel", ({ channel, appId, packageName, artifacts, productName }) => {
   const config = load(channel)
   expect(config.appId).toBe(appId)
   expect(config.productName).toBe(productName)
+  // Public distribution file names; the installed identities below stay `square-agent`.
+  expect(config.artifactName).toBe(`${artifacts}-\${os}-\${arch}.\${ext}`)
   // No fork channel may discover or install official OpenCode updates.
   expect(config.publish).toBeNull()
   expect(config.protocols).toEqual({ name: productName, schemes: [packageName] })

@@ -30,7 +30,9 @@ const getBase = (appId: string): Configuration => {
   const brand = desktopBrand(process.env.OPENCODE_CHANNEL)
 
   return {
-    artifactName: `${brand.packageName}-\${os}-\${arch}.\${ext}`,
+    // Public download/installer file names use the fork's public name; the installed executable and
+    // system package identities below stay `square-agent` to preserve upgrades, settings and data.
+    artifactName: `${brand.artifacts}-\${os}-\${arch}.\${ext}`,
     executableName: brand.packageName,
     // No fork update service is configured. Never infer a GitHub feed.
     publish: null,

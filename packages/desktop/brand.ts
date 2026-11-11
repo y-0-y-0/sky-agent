@@ -8,6 +8,8 @@ export function desktopBrand(raw: string | undefined) {
     name: `Sky Agent${channel === "prod" ? "" : channel === "beta" ? " Beta" : " Dev"}`,
     id: `io.github.y0y0.squareagent${channel === "prod" ? "" : `.${channel}`}`,
     packageName: `square-agent${suffix}`,
+    // Distribution file names use the public name; install and system identities stay `square-agent`.
+    artifacts: `sky-agent${suffix}`,
     protocol: `square-agent${suffix}`,
     // Below Windows' ephemeral range and distinct from OpenCode's managed-service ports.
     port: channel === "prod" ? 27421 : channel === "beta" ? 27422 : 27423,

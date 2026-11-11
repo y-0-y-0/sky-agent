@@ -25,8 +25,8 @@ class ArtifactTests(unittest.TestCase):
         self.addCleanup(self.restore_env)
         os.environ.update(GITHUB_SHA="a" * 40, GITHUB_RUN_ID="123", GITHUB_RUN_ATTEMPT="2")
         for target, names in {
-            "windows-x64": ["square-agent-win-x64.exe"],
-            "linux-x64": ["square-agent-linux-amd64.deb", "square-agent-linux-x86_64.AppImage"],
+            "windows-x64": ["sky-agent-win-x64.exe"],
+            "linux-x64": ["sky-agent-linux-amd64.deb", "sky-agent-linux-x86_64.AppImage"],
         }.items():
             folder = self.root / f"sky-agent-{target}-{'a' * 40}"
             folder.mkdir()
@@ -83,7 +83,7 @@ class ArtifactTests(unittest.TestCase):
                 file.write_text(previous)
 
     def test_rejects_corruption_empty_missing_and_extra_files(self):
-        file = self.root / f"sky-agent-windows-x64-{'a' * 40}/square-agent-win-x64.exe"
+        file = self.root / f"sky-agent-windows-x64-{'a' * 40}/sky-agent-win-x64.exe"
         original = file.read_bytes()
         for body in [original + b"corruption", b"", None]:
             with self.subTest(body=body is None):
@@ -104,7 +104,7 @@ class ArtifactTests(unittest.TestCase):
             release.verify(self.root)
 
     def test_rejects_arm64_appimage_even_with_matching_checksum(self):
-        file = self.root / f"sky-agent-linux-x64-{'a' * 40}/square-agent-linux-x86_64.AppImage"
+        file = self.root / f"sky-agent-linux-x64-{'a' * 40}/sky-agent-linux-x86_64.AppImage"
         body = bytearray(file.read_bytes())
         struct.pack_into("<H", body, 18, 183)
         file.write_bytes(body)
@@ -116,7 +116,7 @@ class ArtifactTests(unittest.TestCase):
             release.verify(self.root)
 
     def test_rejects_plain_executable_instead_of_nsis(self):
-        file = self.root / f"sky-agent-windows-x64-{'a' * 40}/square-agent-win-x64.exe"
+        file = self.root / f"sky-agent-windows-x64-{'a' * 40}/sky-agent-win-x64.exe"
         body = bytearray(file.read_bytes())
         body[256:272] = b"\0" * 16
         file.write_bytes(body)

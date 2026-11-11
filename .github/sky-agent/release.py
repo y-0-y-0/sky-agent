@@ -11,8 +11,8 @@ import tempfile
 
 
 PACKAGES = {
-    "windows-x64": ["square-agent-win-x64.exe"],
-    "linux-x64": ["square-agent-linux-amd64.deb", "square-agent-linux-x86_64.AppImage"],
+    "windows-x64": ["sky-agent-win-x64.exe"],
+    "linux-x64": ["sky-agent-linux-amd64.deb", "sky-agent-linux-x86_64.AppImage"],
 }
 
 
@@ -87,6 +87,7 @@ def stage(target):
             bundled = list(dest.rglob("opencode-cli.exe" if windows else "opencode-cli"))
             require(len(bundled) == 1 and digest(bundled[0]) == digest(cli), f"Packaged CLI differs from source build: {name}")
             require(bundled[0].with_name("opencode-cli.version").read_text().strip() == os.environ["OPENCODE_VERSION"], "Wrong CLI version")
+            # The bundled application executable keeps its installed `square-agent` identity.
             app = bundled[0].parent.parent / ("square-agent.exe" if windows else "square-agent")
             native(app, windows=windows)
             if not windows:

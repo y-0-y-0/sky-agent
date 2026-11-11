@@ -46,7 +46,7 @@ OPENCODE_CHANNEL=prod OPENCODE_VERSION=2.2.7 OPENCODE_TARGET=linux-x64 \
   bun run --cwd packages/desktop pack
 ```
 
-Observed x64 output: `dist/desktop/square-agent-linux-amd64.deb` and `dist/desktop/square-agent-linux-x86_64.AppImage`; electron-builder expands the architecture differently for each format. ARM64 uses `linux-arm64` for both build stages and has not been built here. Inspect with `dpkg-deb --info` / `--contents`, and `AppImage --appimage-extract` in a disposable directory before installing.
+x64 output: `dist/desktop/sky-agent-linux-amd64.deb` and `dist/desktop/sky-agent-linux-x86_64.AppImage`; electron-builder expands the architecture differently for each format. ARM64 uses `linux-arm64` for both build stages and has not been built here. Inspect with `dpkg-deb --info` / `--contents`, and `AppImage --appimage-extract` in a disposable directory before installing.
 
 Windows x64, from a Windows host with Bun and the required native tooling, in PowerShell at the repository root:
 
@@ -68,7 +68,7 @@ bun run --cwd packages/desktop pack
 Remove-Item Env:OPENCODE_DESKTOP_APP
 ```
 
-Output: `dist/desktop/square-agent-win-x64.exe` (NSIS, unsigned). For ARM64 use `windows-arm64` in both stages. Packaging retains native CLI architecture, version-sidecar and node-pty checks; `OPENCODE_TARGET` must agree with electron-builder's architecture. The CLI stays outside `app.asar`.
+Output: `dist/desktop/sky-agent-win-x64.exe` (NSIS, unsigned). For ARM64 use `windows-arm64` in both stages. Packaging retains native CLI architecture, version-sidecar and node-pty checks; `OPENCODE_TARGET` must agree with electron-builder's architecture. The CLI stays outside `app.asar`.
 
 `bun run --cwd packages/desktop dev` uses CLI source and the private dev profile. Do not use `--download-server` for a fork validation: the upstream opt-in development command still downloads an official CLI.
 
@@ -92,7 +92,7 @@ Upstream release/deployment workflows are retained unchanged, with their existin
 
 `.github/workflows/sky-agent-desktop.yml` runs on every branch push (not tag pushes) and on manual dispatch. A push containing several commits builds only its head SHA. Separate Windows 2025 and Ubuntu 24.04 x64 runners use the pinned Bun version, Node 24 and `bun install --frozen-lockfile`, then compile the fork CLI from that same checkout. No official CLI download substitutes for this build. ImageMagick generates the existing Sky Agent icons; Linux uses the compatible ImageMagick 6 `convert` entry point when `magick` is absent.
 
-The workflow builds a real unsigned Windows NSIS installer, Linux deb and AppImage. It extracts every final package and compares its embedded CLI SHA-256 and version with the locally compiled CLI, checks the desktop executable architecture and Linux launcher name, and rejects missing, empty, extra or wrong-platform outputs. The NSIS launcher itself is x86; its verified application and CLI payload are x64. Technical filenames remain `square-agent-win-x64.exe`, `square-agent-linux-amd64.deb` and `square-agent-linux-x86_64.AppImage` to preserve existing identities.
+The workflow builds a real unsigned Windows NSIS installer, Linux deb and AppImage. It extracts every final package and compares its embedded CLI SHA-256 and version with the locally compiled CLI, checks the desktop executable architecture and Linux launcher name, and rejects missing, empty, extra or wrong-platform outputs. The NSIS launcher itself is x86; its verified application and CLI payload are x64. Distributed filenames use the public `sky-agent` prefix (`sky-agent-win-x64.exe`, `sky-agent-linux-amd64.deb`, `sky-agent-linux-x86_64.AppImage`); the deb package name, installed executable name, application IDs, protocols and data paths keep their `square-agent` technical identities.
 
 Find downloadable ZIP artifacts under **Actions → Sky Agent desktop → an execution → Artifacts**, named `sky-agent-{windows,linux}-x64-<SHA>`. Retention is **1 day**, the minimum supported Actions retention and within repository maximums; release assets remain available until their release is deleted. The artifact manifest records SHA, run ID, build attempt, version, CLI hash and package sizes/hashes. Versions use `<root version>-sky.<run number>`, stable across attempts of the same run.
 
