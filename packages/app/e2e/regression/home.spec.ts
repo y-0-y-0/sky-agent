@@ -97,6 +97,10 @@ test("fork bots keep distinct sessions, stable avatars and normal-session access
   expect(await alphaRow.locator("svg").evaluate((node) => node.outerHTML)).toBe(avatar)
   await alphaRow.getByRole("button", { name: "Rename", exact: true }).click()
   const dialog = page.getByRole("dialog")
+  await expect(dialog.locator("form")).toHaveJSProperty(
+    "clientWidth",
+    await dialog.evaluate((node) => node.clientWidth),
+  )
   await dialog.getByRole("textbox", { name: "Bot name" }).fill("Renamed Alpha")
   await dialog.getByRole("button", { name: "Save", exact: true }).click()
   const renamed = page.getByRole("listitem").filter({ hasText: "Renamed Alpha" })

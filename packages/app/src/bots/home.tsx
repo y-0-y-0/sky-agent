@@ -167,7 +167,7 @@ export function HomeBots(props: { home: HomeController; sessions: HomeSessionsCo
 
       return (
         <Dialog fit>
-          <form onSubmit={save}>
+          <form class="w-full" onSubmit={save}>
             <DialogHeader>
               <DialogTitleGroup title={language.t(session ? "bots.rename" : "bots.create")} description={directory} />
             </DialogHeader>
