@@ -60,7 +60,7 @@ test("desktop forks keep discovery and managed restarts on their private service
     expect(ServiceConfig.defaultPort(channel, "win32")).toBe(port)
   }
   process.env.SQUARE_AGENT_SERVICE_PORT = "invalid"
-  expect(() => ServiceConfig.defaultPort()).toThrow("Invalid Square Agent service port")
+  expect(() => ServiceConfig.defaultPort()).toThrow("Invalid Sky Agent service port")
 })
 
 test("managed service ports on Windows stay below the ranges Windows and WSL reserve", () => {

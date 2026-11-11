@@ -49,7 +49,7 @@ export function defaultPort(channel = OPENCODE_CHANNEL, platform = process.platf
   // Pairing also starts through `service start`, not only Desktop's direct `serve --port` command.
   if (process.env.SQUARE_AGENT_SERVICE === "1") {
     const port = Number(process.env.SQUARE_AGENT_SERVICE_PORT)
-    if (!Number.isInteger(port) || port < 1 || port > 65_535) throw new Error("Invalid Square Agent service port")
+    if (!Number.isInteger(port) || port < 1 || port > 65_535) throw new Error("Invalid Sky Agent service port")
     return port
   }
   const port = channelPort(channel)
