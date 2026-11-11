@@ -9,6 +9,10 @@ import { createHomeScrollController } from "./scroll"
 import { createHomeSessionSearchController } from "./sessions/search"
 import { createHomeSessionsController } from "./sessions/controller"
 import { HomeSessions } from "./sessions/region"
+import { Button } from "@opencode/ui/button"
+import { createStore } from "solid-js/store"
+import { IS_SQUARE_AGENT } from "@/brand"
+import { HomeBots } from "@/bots/home"
 
 export function Home() {
   const mobile = createMediaQuery("(max-width: 767px)")
@@ -17,6 +21,7 @@ export function Home() {
   const sessions = createHomeSessionsController(home)
   const search = createHomeSessionSearchController(home, sessions)
   const scroll = createHomeScrollController(sessions.data.groups)
+  const [state, setState] = createStore({ view: "sessions" as "sessions" | "bots" })
 
   return (
     <div
@@ -26,6 +31,16 @@ export function Home() {
         bg-v2-background-bg-base shadow-[var(--v2-elevation-raised)]
       `}
     >
+      <Show when={IS_SQUARE_AGENT}>
+        <nav aria-label={sessions.copy.language.t("bots.navigation")} class="flex shrink-0 justify-end gap-1 px-4 pt-3">
+          <Button variant="ghost" aria-pressed={state.view === "sessions"} onClick={() => setState("view", "sessions")}>
+            {sessions.copy.language.t("bots.sessions")}
+          </Button>
+          <Button variant="ghost" aria-pressed={state.view === "bots"} onClick={() => setState("view", "bots")}>
+            {sessions.copy.language.t("bots.title")}
+          </Button>
+        </nav>
+      </Show>
       <Show when={mobile()}>
         <div class="relative z-40 -mb-3 shrink-0 px-3 pt-3">
           <HomeProjects projects={projects} scroll={scroll} dropdown />
@@ -47,7 +62,12 @@ export function Home() {
           <Show when={!mobile()}>
             <HomeProjects projects={projects} scroll={scroll} />
           </Show>
-          <HomeSessions sessions={sessions} search={search} scroll={scroll} />
+          <Show
+            when={IS_SQUARE_AGENT && state.view === "bots"}
+            fallback={<HomeSessions sessions={sessions} search={search} scroll={scroll} />}
+          >
+            <HomeBots home={home} sessions={sessions} />
+          </Show>
         </div>
       </ScrollView>
       <div class="hidden shrink-0 px-3 py-2 md:block lg:hidden">

@@ -83,6 +83,7 @@
     "@tanstack/solid-virtual": "catalog:",
     "effect": "catalog:",
     "fuzzysort": "catalog:",
+    "open-bot-avatar": "0.2.0",
     "qr-scanner": "1.4.2",
     "solid-js": "catalog:"
   }

@@ -38,6 +38,7 @@ import {
 import { SessionHeaderSpacer } from "@/session/header/session-header"
 import { SessionHeaderGap } from "@/session/header/drag-area"
 import { SessionWorkingIndicator } from "@/session/header/session-working-indicator"
+import { SessionBotAvatar } from "@/bots/session-avatar"
 
 type BlockingTask = { type: "shell" | "subagent"; partID: string; id?: string; label?: string }
 
@@ -519,6 +520,7 @@ function MessageTimelineView(
                 </Show>
               )}
             >
+              <SessionBotAvatar sessionID={sessionID()} />
               <Show when={parentID() && childTitle()}>
                 {(value) => (
                   <>

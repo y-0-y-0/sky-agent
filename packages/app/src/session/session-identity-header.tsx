@@ -43,6 +43,7 @@ import { SessionHeaderSeparator } from "./header/separator"
 import { createSessionHeaderFit } from "./header/fit"
 import { SessionWorkingIndicator } from "./header/session-working-indicator"
 import { CollapsedSidebarToggleSpace } from "@/shell/sidebar-toggle"
+import { SessionBotAvatar } from "@/bots/session-avatar"
 import "./session-identity-header.css"
 
 const SessionHeaderCollapse = createContext<() => number>(() => 0)
@@ -635,6 +636,7 @@ export function SessionIdentityHeader(props: { sessionID: string; session?: Sess
             </>
           }
         >
+          <SessionBotAvatar sessionID={props.sessionID} />
           <SessionWorkingIndicator sessionID={props.sessionID} />
           <Show when={title()}>
             {(value) => (

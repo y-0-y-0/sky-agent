@@ -14,6 +14,7 @@ import {
 } from "../utils/app"
 import { mockOpenCodeServer, mockServers } from "../utils/mock-server"
 import { fixture, mockStressTimeline } from "../utils/session-fixture"
+import { status } from "../utils/timeline"
 import { mockRemoteServer, mockWorkspace, newSessionLocation } from "../utils/workspace"
 import { APP_READY_TIMEOUT, expectAppVisible } from "../utils/waits"
 
@@ -21,6 +22,125 @@ test.use({ serviceWorkers: "block" })
 
 const row = (page: Page, title: string) =>
   page.locator('[data-component="home-session-row"]').filter({ hasText: title })
+
+test("fork bots keep distinct sessions, stable avatars and normal-session access through rename and deletion", async ({
+  page,
+}) => {
+  const saving = Promise.withResolvers<void>()
+  const finish = Promise.withResolvers<void>()
+  const workspace = await mockWorkspace(page, {
+    name: "Bots",
+    sessions: [{ id: "ses_ordinary", title: "Ordinary conversation" }],
+    seed: { tabs: [] },
+    onSessionCreate: (_body, attempt) => {
+      if (attempt !== 3) return
+      saving.resolve()
+      return finish.promise
+    },
+  })
+
+  await page.goto("/")
+  const nav = page.getByRole("navigation", { name: "Home views" })
+
+  if (process.env.VITE_SQUARE_AGENT !== "1") {
+    await expect(nav).toHaveCount(0)
+
+    return
+  }
+
+  const openBots = async () => {
+    await page.getByRole("button", { name: "Home", exact: true }).click()
+    await nav.getByRole("button", { name: "Bots", exact: true }).click()
+    await expect(page.getByRole("heading", { name: "Bots", exact: true })).toBeVisible()
+  }
+
+  const create = async (name: string) => {
+    await page.getByRole("button", { name: "Create bot", exact: true }).click()
+    const dialog = page.getByRole("dialog")
+    await dialog.getByRole("textbox", { name: "Bot name" }).fill(name)
+    await dialog.getByRole("button", { name: "Create bot", exact: true }).click()
+    await expect(page).toHaveURL(/\/session\/ses_[^/]+$/)
+    await expect(page.locator('[data-component="composer-editor"]')).toBeEditable()
+    await expect(page.getByRole("heading", { name, exact: true })).toBeVisible()
+
+    return new URL(page.url()).pathname.split("/").at(-1)!
+  }
+
+  await nav.getByRole("button", { name: "Bots", exact: true }).click()
+  await expect(page.getByText("No bots in this selection yet. Create one to start a conversation.")).toBeVisible()
+  const alpha = await create("Alpha bot")
+  await openBots()
+  const alphaRow = page.getByRole("listitem").filter({ hasText: "Alpha bot" })
+  const avatar = await alphaRow.locator("svg").evaluate((node) => node.outerHTML)
+  const beta = await create("Beta bot")
+  expect(beta).not.toBe(alpha)
+  await openBots()
+  const betaRow = page.getByRole("listitem").filter({ hasText: "Beta bot" })
+  await expect(alphaRow).toBeVisible()
+  await expect(betaRow).toBeVisible()
+  expect(await betaRow.locator("svg").evaluate((node) => node.outerHTML)).not.toBe(avatar)
+  await workspace.push([status("busy", 1, alpha)])
+  await expect(alphaRow).toContainText("Working")
+  await expect(alphaRow.locator("canvas")).toBeVisible()
+  await expect(betaRow.locator("canvas")).toHaveCount(0)
+  await page.emulateMedia({ reducedMotion: "reduce" })
+  await expect(alphaRow.locator("canvas")).toHaveCount(0)
+  await expect(alphaRow.locator("svg")).toBeVisible()
+  await page.emulateMedia({ reducedMotion: "no-preference" })
+  await expect(alphaRow.locator("canvas")).toBeVisible()
+  await workspace.push([status("idle", 1, alpha)])
+  await expect(alphaRow).toContainText("Idle")
+  await expect(alphaRow.locator("canvas")).toHaveCount(0)
+  await page.reload()
+  await nav.getByRole("button", { name: "Bots", exact: true }).click()
+  await expect(alphaRow).toBeVisible()
+  expect(await alphaRow.locator("svg").evaluate((node) => node.outerHTML)).toBe(avatar)
+  await alphaRow.getByRole("button", { name: "Rename", exact: true }).click()
+  const dialog = page.getByRole("dialog")
+  await dialog.getByRole("textbox", { name: "Bot name" }).fill("Renamed Alpha")
+  await dialog.getByRole("button", { name: "Save", exact: true }).click()
+  const renamed = page.getByRole("listitem").filter({ hasText: "Renamed Alpha" })
+  await expect(renamed).toBeVisible()
+  expect(await renamed.locator("svg").evaluate((node) => node.outerHTML)).toBe(avatar)
+  await renamed.getByRole("button", { name: "Delete session", exact: true }).click()
+  await expect(dialog).toContainText("conversation history and child sessions will be permanently deleted")
+  await dialog.getByRole("button", { name: "Cancel", exact: true }).click()
+  await expect(renamed).toBeVisible()
+  await renamed.getByRole("button", { name: "Delete session", exact: true }).click()
+  await dialog.getByRole("button", { name: "Delete session", exact: true }).click()
+  await expect(renamed).toHaveCount(0)
+  await betaRow.getByRole("button", { name: /Beta bot.*Idle/ }).click()
+  await expectPath(page, sessionHref(beta))
+  await openBots()
+  await nav.getByRole("button", { name: "Sessions", exact: true }).click()
+  await expect(row(page, "Ordinary conversation")).toBeVisible()
+  await row(page, "Ordinary conversation").click()
+  await expectPath(page, sessionHref("ses_ordinary"))
+  await page.reload()
+  await expect(page.locator('[data-component="composer-editor"]')).toBeEditable()
+  await openBots()
+  await expect(renamed).toHaveCount(0)
+  await expect(betaRow).toBeVisible()
+
+  await page.getByRole("button", { name: "Create bot", exact: true }).click()
+  await dialog.getByRole("textbox", { name: "Bot name" }).fill("Late bot")
+  await dialog.getByRole("button", { name: "Create bot", exact: true }).click()
+  await saving.promise
+  try {
+    // Keep the dialog's exit timer paused while the server completes a save after dismissal.
+    await page.clock.install({ time: 0 })
+    await page.clock.pauseAt(1000)
+    await dialog.getByRole("button", { name: "Cancel", exact: true }).click()
+    finish.resolve()
+    await expect.poll(() => workspace.sessions.some((session) => session.title === "Late bot")).toBe(true)
+    await page.clock.runFor(0)
+    await expect(page).toHaveURL("/")
+    await page.clock.runFor(100)
+    await expect(dialog).toHaveCount(0)
+  } finally {
+    finish.resolve()
+  }
+})
 
 async function openHome(page: Page, input: Parameters<typeof mockStressTimeline>[1] = {}) {
   await mockStressTimeline(page, input)

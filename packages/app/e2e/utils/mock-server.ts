@@ -1261,7 +1261,14 @@ function mockHandlers(
               ? Effect.succeed({ data: currentSession(session, config.directory) })
               : Effect.fail(new MockNotFound({ message: "Session not found" }))
           }),
-        sessionRemove: () => noContent,
+        sessionRemove: (ctx) =>
+          Effect.sync(() => {
+            const ids = new Set([ctx.params.sessionID])
+            for (const id of ids) {
+              config.sessions.filter((item) => item.parentID === id).forEach((item) => ids.add(item.id))
+            }
+            config.sessions.splice(0, config.sessions.length, ...config.sessions.filter((item) => !ids.has(item.id)))
+          }).pipe(Effect.andThen(noContent)),
         sessionShell: () => noContent,
         sessionView: (ctx) =>
           Effect.sync(() => {
@@ -1595,6 +1602,7 @@ export function currentSession(session: MockSession, fallbackDirectory?: string)
     projectID: session.projectID ?? "project",
     agent: session.agent ?? "build",
     model: session.model,
+    metadata: session.metadata,
     cost: session.cost ?? 0,
     tokens: session.tokens ?? { input: 0, output: 0, reasoning: 0, cache: { read: 0, write: 0 } },
     ...decodeSessionOutcome(session),

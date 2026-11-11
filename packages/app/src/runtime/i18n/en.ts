@@ -1,6 +1,21 @@
 import { DESKTOP_NATIVE_ENGLISH } from "./desktop-native"
 
 export const dict = {
+  "bots.title": "Bots",
+  "bots.sessions": "Sessions",
+  "bots.navigation": "Home views",
+  "bots.create": "Create bot",
+  "bots.rename": "Rename bot",
+  "bots.name": "Bot name",
+  "bots.description":
+    "Each bot is a separate session with its own conversation. Files, projects, providers and permissions follow normal session rules and are not isolated by this view.",
+  "bots.chooseProject": "Choose a project to create a bot.",
+  "bots.empty": "No bots in this selection yet. Create one to start a conversation.",
+  "bots.idle": "Idle",
+  "bots.loadFailed": "Could not load bots from this server.",
+  "bots.saveFailed": "Could not confirm the save. Refresh the list before retrying; the server may have saved it.",
+  "bots.deleteConfirm":
+    "Delete bot “{{name}}”? Its session, conversation history and child sessions will be permanently deleted. Project files will not be deleted.",
   "experiment.voiceCalls": "Voice calls",
   "voice.call": "Call",
   "voice.mute": "Mute",

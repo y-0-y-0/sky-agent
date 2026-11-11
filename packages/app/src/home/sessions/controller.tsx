@@ -43,6 +43,8 @@ import {
 import { usePlatform } from "@/runtime/platform/platform"
 import { sessionLabel, sessionTitle } from "@/session/title"
 import { showToast } from "@/shell/notifications/toast"
+import { IS_SQUARE_AGENT } from "@/brand"
+import { botIdentity } from "@/bots/identity"
 import { archiveHomeSession } from "./archive"
 import { homeSessionsQuery } from "./queries"
 import {
@@ -501,7 +503,10 @@ export function createHomeSessionsController(home: HomeController) {
         <DialogHeader hideClose>
           <DialogTitleGroup
             title={language.t("session.delete.title")}
-            description={language.t("session.delete.confirm", { name: name() })}
+            description={language.t(
+              IS_SQUARE_AGENT && botIdentity(props.session) ? "bots.deleteConfirm" : "session.delete.confirm",
+              { name: name() },
+            )}
           />
         </DialogHeader>
         <DialogFooter>

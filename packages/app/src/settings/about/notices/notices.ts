@@ -1,5 +1,6 @@
 import apache from "./apache-2.0.txt?raw"
 import betterOfficeNotice from "./betteroffice-notice.txt?raw"
+import openBotAvatarLicense from "./open-bot-avatar-MIT.txt?raw"
 import { crates, crateTexts } from "./crates"
 
 /**
@@ -24,6 +25,15 @@ export const notices = [
     license: "Apache License 2.0",
     notice: "Copyright 2026 EigenPal Inc.",
     text: apache,
+  },
+  {
+    name: "open-bot-avatar",
+    detail: "0.2.0 · b59a73ac4be67d45a6756ef22309440b27d87682",
+    detailKey: undefined,
+    url: "https://github.com/DominikScholz/open-bot-avatar/tree/b59a73ac4be67d45a6756ef22309440b27d87682",
+    license: "MIT License",
+    notice: "Copyright (c) 2026 Dominik Scholz",
+    text: openBotAvatarLicense,
   },
 ]
 

@@ -16,6 +16,8 @@ import { useServerSDK } from "@/runtime/server/client"
 import { sessionHref } from "@/shell/routes/session"
 import { sessionTitle } from "@/session/title"
 import { showToast } from "@/shell/notifications/toast"
+import { IS_SQUARE_AGENT } from "@/brand"
+import { botIdentity } from "@/bots/identity"
 import { applyTimelineMessageHandoff, timelineChildTitle, visibleTimelineMessages } from "./controller-projection"
 import {
   createSessionDeleteState,
@@ -373,7 +375,12 @@ export function createTimelineController(input: { session: TimelineSessionSource
         <DialogHeader hideClose>
           <DialogTitleGroup
             title={language.t("session.delete.title")}
-            description={language.t("session.delete.confirm", { name: name() })}
+            description={language.t(
+              IS_SQUARE_AGENT && botIdentity(data.session.get(props.sessionID))
+                ? "bots.deleteConfirm"
+                : "session.delete.confirm",
+              { name: name() },
+            )}
           />
         </DialogHeader>
         <DialogFooter>
