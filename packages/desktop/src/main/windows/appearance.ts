@@ -156,7 +156,9 @@ export function wireFocus(win: BrowserWindow) {
 }
 
 function iconsDir(path: Path.Path, paths: DesktopPaths.Resolved) {
-  return app.isPackaged ? path.join(process.resourcesPath, "icons") : path.join(paths.developmentResourcesRoot, "icons")
+  return app.isPackaged
+    ? path.join(app.getAppPath(), "resources/icons")
+    : path.join(paths.developmentResourcesRoot, "icons")
 }
 
 function iconPath(path: Path.Path, paths: DesktopPaths.Resolved) {

@@ -39,6 +39,15 @@
   font-style: normal;
 }
 
+/* Reserved for the brand name; other UI keeps the user's selected font. */
+@font-face {
+  font-family: "Rubik";
+  src: url("../../../services/site/public/email/rubik-latin.woff2") format("woff2");
+  font-weight: 300 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Text covers every weight below bold, so only bold syntax tokens and markup load the Bold face. */
 @font-face {
   font-family: "IBM Plex Mono";
@@ -71,6 +80,10 @@
   inherits: false;
 }
 
+:root {
+  --font-family-brand: "Rubik";
+}
+
 @media (display-mode: standalone) {
   /* WebKit excludes safe-area insets from dvh in installed apps. */
   #root {
@@ -84,6 +97,18 @@
 }
 
 @layer components {
+  .sky-agent-brand-name {
+    font-family: var(--font-family-brand), var(--font-family-sans);
+    font-weight: var(--font-weight-semibold, 600);
+    letter-spacing: -0.035em;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .sky-agent-home-wordmark {
+    container-type: inline-size;
+  }
+
   [data-slot="session-chat-panel"][data-scrollbar-hidden="true"]
     [data-slot="session-timeline-visible"]
     .scroll-view__thumb {

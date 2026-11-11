@@ -1,8 +1,8 @@
-# Square Agent Windows/Linux icons
+# Sky Agent Windows/Linux icons
 
-The canonical source is `packages/app/src/assets/square-agent.png`, copied byte-for-byte from the supplied attachment. Its orange and white colors, existing alpha channel and square proportions are preserved. Do not redraw or recolor it. The source's alpha was discovered during validation; generated icons composite it onto the requested black canvas instead of introducing transparency.
+The canonical source is `packages/app/src/assets/square-agent.png`, a prepared transparent cutout of the supplied orange furry mascot with its background removed. It is not a byte-for-byte copy of the attachment. Preserve its orange fur, white eyes, alpha channel and proportions; do not redraw or recolor it. Exports retain real transparency instead of compositing onto black.
 
-From `packages/desktop`, `bun run script/copy-icons.ts` uses ImageMagick (`magick`) to generate opaque PNGs from 16 to 1024 pixels, `icon.png`, `dock.png` and a seven-frame Windows `icon.ico` in `resources/icons/`, plus the checked-in `packages/app/src/assets/square-agent-display.png` for the renderer. Every channel uses this source. Generated resources are rebuilt, not the source of truth. Windows/Linux packaging uses these paths; no Square Agent macOS ICNS is generated.
+From `packages/desktop`, `bun run script/copy-icons.ts` uses ImageMagick (`magick`) to generate transparent PNGs from 16 to 1024 pixels, `icon.png`, `dock.png` and a seven-frame Windows `icon.ico` (256, 128, 64, 48, 32, 24 and 16 pixels) in `resources/icons/`, plus the checked-in `packages/app/src/assets/square-agent-display.png` for the renderer. Each export preserves the source aspect ratio and centers it on a transparent square; the ICO source is squared before generating its seven frames to avoid stretching. Every channel uses this source. Generated resources are rebuilt, not the source of truth. Windows/Linux packaging uses these paths; no Sky Agent macOS ICNS is generated. The `square-agent` asset filenames remain technical names; the product and shortcuts display Sky Agent.
 
 ## Historical upstream macOS process
 

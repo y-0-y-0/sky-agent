@@ -5,7 +5,7 @@ export function desktopBrand(raw: string | undefined) {
 
   return {
     channel,
-    name: `Square Agent${channel === "prod" ? "" : channel === "beta" ? " Beta" : " Dev"}`,
+    name: `Sky Agent${channel === "prod" ? "" : channel === "beta" ? " Beta" : " Dev"}`,
     id: `io.github.y0y0.squareagent${channel === "prod" ? "" : `.${channel}`}`,
     packageName: `square-agent${suffix}`,
     protocol: `square-agent${suffix}`,

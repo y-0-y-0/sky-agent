@@ -83,7 +83,7 @@ export function createEarlyWindow() {
   const file = path.join(app.getPath("userData"), windowStateFile(id))
   const state = resolveWindowState(readWindowState(file), { width: 1280, height: 800 }, displays)
   const zoom = storedZoomLevel()
-  const icons = app.isPackaged ? path.join(process.resourcesPath, "icons") : path.join(root, "../../resources/icons")
+  const icons = path.join(root, "../../resources/icons")
 
   // On Windows, maximize() on a hidden window shows it with SW_SHOWMAXIMIZED, so it never paints at
   // its normal bounds first. macOS does not reliably enter fullscreen while hidden, so it shows first.

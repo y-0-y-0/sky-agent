@@ -1,16 +1,22 @@
-# Square Agent
+# Sky Agent
 
-<img src="packages/app/src/assets/square-agent-display.png" alt="Square Agent" width="128" />
+<img src="packages/app/src/assets/square-agent-display.png" alt="Sky Agent" width="128" />
 
-Square Agent is an independent desktop fork of [OpenCode](https://github.com/anomalyco/opencode), based on commit `8656f3048d03cc3e8050b3533db9495f52e50677` (2.2.7). It is not affiliated with or endorsed by OpenCode or Anomaly Innovations, Inc. The MIT license and upstream copyright remain applicable. Availability of the name as a trademark has not been verified.
+Sky Agent is an independent desktop fork of [OpenCode](https://github.com/anomalyco/opencode), based on commit `8656f3048d03cc3e8050b3533db9495f52e50677` (2.2.7). It is not affiliated with or endorsed by OpenCode or Anomaly Innovations, Inc. The MIT license and upstream copyright remain applicable. Availability of the name as a trademark has not been verified.
 
-**Local Linux validation build, not a verified release:** Linux x64 deb/AppImage packages have been built. The packaged Electron app has been exercised with an isolated profile, light/dark branding, legal notices, a session, a harmless command and a repository diff. Windows NSIS packaging is prepared but has not been built or tested. See [desktop build instructions and compatibility audit](packages/desktop/README.md). No Square Agent update server is configured; automatic binary updates are disabled. No existing OpenCode data is migrated.
+**Local Linux validation build, not a verified release:** Sky Agent Linux x64 deb/AppImage packages have been built and inspected. The packaged Electron app's light/dark branding, legal notices and actual native window icon have been checked with an isolated profile; earlier fork validation also exercised a session, a harmless command and a repository diff. Windows NSIS packaging is prepared but has not been built or tested. See [desktop build instructions and compatibility audit](packages/desktop/README.md). No Sky Agent update server is configured; automatic binary updates are disabled. No existing OpenCode data is migrated.
 
-The supplied source image is retained byte-for-byte (the accompanying request described blue, but the supplied pixels are orange). It has an existing alpha channel; display icons composite that transparency onto the requested black canvas, without redrawing or recoloring the foreground. Internal OpenCode APIs and provider names remain unchanged for compatibility.
+The visible name changed from Square Agent to Sky Agent. Existing `square-agent` package/executable names, application IDs, data paths, protocols and plugin identities stay unchanged to preserve sessions, settings and provider connections. Linux's install directory follows the visible name (`/opt/Sky Agent`); user data does not move.
+
+The new orange furry mascot has been cut out from the supplied image, removing its background and horizontal streaks. The prepared canonical PNG, renderer image and generated Windows/Linux icons retain transparency; no black canvas is added. Internal OpenCode APIs and provider names remain unchanged for compatibility.
+
+## Desktop downloads and automatic builds
+
+[Sky Agent desktop Actions](https://github.com/y-0-y-0/sky-agent/actions/workflows/sky-agent-desktop.yml) builds each branch push and supports **Run workflow** for a selected branch. Successful Windows/Linux x64 builds publish a new unsigned [test prerelease](https://github.com/y-0-y-0/sky-agent/releases) with a Windows NSIS `.exe`, Linux `.deb` and `.AppImage`; it never replaces stable Latest. The same files are Actions artifacts retained for **1 day**. Existing `square-agent` filenames are intentional technical identities. Windows may display an unknown-publisher/SmartScreen warning. See [build, publication and rerun details](packages/desktop/README.md#automatic-desktop-prereleases). Packaging validation is not a native installation or provider-authentication acceptance test.
 
 ## Upstream OpenCode documentation
 
-The following is retained upstream documentation. Its installation commands install **OpenCode**, not Square Agent.
+The following is retained upstream documentation. Its installation commands install **OpenCode**, not Sky Agent.
 
 <p align="center">
   <a href="https://opencode.ai">

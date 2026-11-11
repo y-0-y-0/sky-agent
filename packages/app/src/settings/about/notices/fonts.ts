@@ -1,12 +1,17 @@
 import license from "./fonts/OFL-1.1.txt?raw"
 
 /**
- * The font families the Office previews ship, each with the copyright lines its own license file carries. Every
- * family is under the SIL Open Font License 1.1, so the license text is shown once.
+ * Font families shipped by Office previews and app branding, with the copyright lines from their license files.
+ * Every family is under the SIL Open Font License 1.1, so the license text is shown once.
  */
 export const fonts = {
   license,
   families: [
+    {
+      name: "Rubik",
+      url: "https://github.com/googlefonts/rubik",
+      copyright: ["Copyright 2015 The Rubik Project Authors (https://github.com/googlefonts/rubik)"],
+    },
     {
       name: "Carlito",
       url: "https://github.com/googlefonts/carlito",

@@ -151,9 +151,11 @@ export function SettingsAbout(props: { active: boolean }) {
       </div>
 
       <Show when={IS_SQUARE_AGENT} fallback={<AnimatedWordmark active={props.active} />}>
-        <div class="flex items-center justify-center gap-3">
-          <img src={PRODUCT_LOGO} alt="" class="size-16 object-contain" />
-          <span class="text-xl">{PRODUCT_NAME}</span>
+        <div class="flex max-w-full flex-wrap items-center justify-center gap-3">
+          <img src={PRODUCT_LOGO} alt="" class="size-16 max-w-full shrink-0 object-contain" />
+          <span class="sky-agent-brand-name max-w-full text-center text-[clamp(24px,3vw,30px)] whitespace-normal">
+            {PRODUCT_NAME}
+          </span>
         </div>
         <p>{language.t("settings.about.fork")}</p>
         <p>{language.t("settings.about.manualUpdates")}</p>

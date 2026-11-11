@@ -17,15 +17,15 @@ const channels = [
     channel: "dev",
     appId: "io.github.y0y0.squareagent.dev",
     packageName: "square-agent-dev",
-    productName: "Square Agent Dev",
+    productName: "Sky Agent Dev",
   },
   {
     channel: "beta",
     appId: "io.github.y0y0.squareagent.beta",
     packageName: "square-agent-beta",
-    productName: "Square Agent Beta",
+    productName: "Sky Agent Beta",
   },
-  { channel: "prod", appId: "io.github.y0y0.squareagent", packageName: "square-agent", productName: "Square Agent" },
+  { channel: "prod", appId: "io.github.y0y0.squareagent", packageName: "square-agent", productName: "Sky Agent" },
 ] as const
 
 function load(channel: string, target?: string): Configuration {
@@ -67,6 +67,14 @@ test.each(channels)("channel identity for $channel", ({ channel, appId, packageN
   expect(config.deb?.packageName).toBe(packageName)
   expect(config.rpm?.packageName).toBe(packageName)
   expect(config.extraMetadata?.desktopName).toBe(`${appId}.desktop`)
+  expect(config.executableName).toBe(packageName)
+  expect(config.nsis?.shortcutName).toBe(productName)
+  expect(config.nsis?.createDesktopShortcut).toBe(true)
+  expect(config.nsis?.createStartMenuShortcut).toBe(true)
+  expect(config.win?.icon).toBe("resources/icons/icon.ico")
+  expect(config.nsis?.installerIcon).toBe("resources/icons/icon.ico")
+  expect(config.nsis?.installerHeaderIcon).toBe("resources/icons/icon.ico")
+  expect(config.linux?.icon).toBe("resources/icons")
   // The executable must never end in `.desktop`: libappimage resolves the
   // AppImage's desktop entry by globbing `*.desktop`, and an ELF matching
   // that glob breaks integration (anomalyco/opencode#51867).

@@ -1,0 +1,122 @@
+name: Sky Agent desktop
+run-name: Sky Agent desktop — ${{ github.ref_name }} — attempt ${{ github.run_attempt }}
+
+on:
+  push:
+    branches: ["**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    name: Build ${{ matrix.target }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { target: windows-x64, runner: windows-2025 }
+          - { target: linux-x64, runner: ubuntu-24.04 }
+    env:
+      OPENCODE_CHANNEL: prod
+      OPENCODE_TARGET: ${{ matrix.target }}
+      CSC_IDENTITY_AUTO_DISCOVERY: "false"
+      NODE_OPTIONS: --max-old-space-size=4096
+    steps:
+      - name: Check out the exact source commit
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Set up Bun, Node and frozen dependencies
+        uses: ./.github/actions/setup-bun
+      - name: Set build version
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          echo "OPENCODE_VERSION=$(node -p 'require("./package.json").version')-sky.$GITHUB_RUN_NUMBER" >> "$GITHUB_ENV"
+      - name: Set up Linux packaging tools
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends imagemagick
+          # Ubuntu 24.04 supplies ImageMagick 6; these conversion options also work with convert.
+          if ! command -v magick; then
+            mkdir -p "$RUNNER_TEMP/sky-tools"
+            printf '#!/usr/bin/env bash\nexec convert "$@"\n' > "$RUNNER_TEMP/sky-tools/magick"
+            chmod +x "$RUNNER_TEMP/sky-tools/magick"
+            echo "$RUNNER_TEMP/sky-tools" >> "$GITHUB_PATH"
+          fi
+      - name: Set up Windows packaging tools
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          if (-not (Get-Command magick -ErrorAction SilentlyContinue)) {
+            choco install imagemagick --yes --no-progress
+            if ($LASTEXITCODE -ne 0) { throw 'ImageMagick installation failed' }
+            (Get-ChildItem "$env:ProgramFiles\ImageMagick*" -Directory).FullName >> $env:GITHUB_PATH
+          }
+          'C:\Program Files\7-Zip' >> $env:GITHUB_PATH
+      - name: Test artifact rejection and rerun provenance
+        if: runner.os == 'Linux'
+        run: python3 -B -m unittest discover -s .github/sky-agent -v
+      - name: Test desktop contracts
+        run: bun run --cwd packages/desktop test
+      - name: Build the fork CLI from source
+        run: bun run --cwd packages/cli script/build.ts --skip-install
+        env:
+          OPENCODE_CHANNEL: latest
+          OPENCODE_TARGET: ${{ matrix.target }}-baseline
+      - name: Build desktop and package
+        run: |
+          bun run --cwd packages/desktop build
+          bun run --cwd packages/desktop pack
+      - name: Build the unsigned Windows NSIS installer
+        if: runner.os == 'Windows'
+        run: |
+          # pack deletes both output directories, so keep the prepackaged app outside them.
+          mv dist/desktop/app "$RUNNER_TEMP/sky-agent-app"
+          OPENCODE_DESKTOP_APP="$RUNNER_TEMP/sky-agent-app" bun run --cwd packages/desktop pack
+      - name: Verify final packages and embedded source CLI
+        run: python3 .github/sky-agent/release.py stage "$OPENCODE_TARGET"
+      - name: Upload verified desktop packages
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: sky-agent-${{ matrix.target }}-${{ github.sha }}
+          path: dist/desktop/*
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 1
+          # A partial rerun replaces only this platform's artifact in this same run and SHA.
+          overwrite: true
+
+  publish:
+    name: Publish complete prerelease
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - name: Check out only release validation scripts
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout: /.github/sky-agent/
+          sparse-checkout-cone-mode: false
+      - name: Download this run's same-SHA platform artifacts
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: sky-agent-*-x64-${{ github.sha }}
+          path: ${{ runner.temp }}/sky-artifacts
+      - name: Verify all assets, upload to a new draft, then publish
+        run: python3 .github/sky-agent/release.py publish "$RUNNER_TEMP/sky-artifacts"
+        env:
+          GH_TOKEN: ${{ github.token }}

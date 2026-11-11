@@ -176,12 +176,15 @@ export function NewSessionWordmark(props: {
           props.ref(el)
         }}
         data-slot="wordmark-box"
-        class="relative mx-auto aspect-[234/42] w-4/5"
+        class="relative mx-auto w-4/5"
+        classList={{ "sky-agent-home-wordmark": IS_SQUARE_AGENT, "aspect-[234/42]": !IS_SQUARE_AGENT }}
       >
         <Show when={IS_SQUARE_AGENT}>
-          <div class="flex size-full items-center justify-center gap-4">
-            <img src={PRODUCT_LOGO} alt="" class="h-full aspect-square object-contain" />
-            <span class="text-2xl">{PRODUCT_NAME}</span>
+          <div class="flex w-full flex-wrap items-center justify-center gap-3 sm:gap-4">
+            <img src={PRODUCT_LOGO} alt="" class="aspect-square w-[clamp(32px,18cqw,104px)] shrink-0 object-contain" />
+            <span class="sky-agent-brand-name max-w-full text-center text-[clamp(16px,8cqw,36px)] whitespace-normal">
+              {PRODUCT_NAME}
+            </span>
           </div>
         </Show>
         <Show when={!IS_SQUARE_AGENT && lodger}>

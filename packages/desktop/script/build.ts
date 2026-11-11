@@ -22,7 +22,7 @@ await $`bun ./script/copy-metainfo.ts ${channel}`
 const built = await exists(path.join(cli, getCurrentCli().package.replace("@opencode/", "")))
 
 if (!built)
-  throw new Error(`Square Agent requires the locally built ${getCurrentCli().target} CLI in ${cli}; build it first`)
+  throw new Error(`Sky Agent requires the locally built ${getCurrentCli().target} CLI in ${cli}; build it first`)
 
 await copyBuiltCliToResources(cli)
 

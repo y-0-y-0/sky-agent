@@ -21,12 +21,12 @@ const xml = `<?xml version="1.0" encoding="UTF-8"?>
   <summary>${summary}</summary>
 
   <developer id="io.github.y0y0">
-    <name>Square Agent contributors</name>
+    <name>Sky Agent contributors</name>
   </developer>
 
   <description>
     <p>
-      Square Agent is an independent fork of OpenCode, an open source AI coding agent.
+      ${productName} is an independent fork of OpenCode, an open source AI coding agent.
       It is not affiliated with or endorsed by OpenCode or Anomaly Innovations Inc.
     </p>
   </description>
@@ -35,9 +35,9 @@ const xml = `<?xml version="1.0" encoding="UTF-8"?>
 
   <content_rating type="oars-1.1" />
 
-  <url type="bugtracker">https://github.com/y-0-y-0/square-agent/issues</url>
-  <url type="homepage">https://github.com/y-0-y-0/square-agent</url>
-  <url type="vcs-browser">https://github.com/y-0-y-0/square-agent</url>
+  <url type="bugtracker">https://github.com/y-0-y-0/sky-agent/issues</url>
+  <url type="homepage">https://github.com/y-0-y-0/sky-agent</url>
+  <url type="vcs-browser">https://github.com/y-0-y-0/sky-agent</url>
 </component>
 `
 

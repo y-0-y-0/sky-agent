@@ -44,7 +44,7 @@ export default function DialogThirdPartyNotices() {
               )}
             </For>
             <section class="settings-notice settings-crates">
-              <h3 class="settings-notice-heading">{language.t("settings.about.notices.fonts.title")}</h3>
+              <h3 class="settings-notice-heading">{language.t("settings.about.notices.fonts.bundledTitle")}</h3>
               <p>{language.t("settings.about.notices.fonts.description")}</p>
               <ul class="settings-crate-list">
                 <For each={fonts.families}>

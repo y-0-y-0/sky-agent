@@ -880,9 +880,9 @@ export const dict = {
   "settings.about.copyVersionFailed": "Failed to copy version",
   "settings.about.license": "Released under the MIT License",
   "settings.about.fork":
-    "Square Agent is an independent fork of OpenCode. It is not affiliated with or endorsed by OpenCode or Anomaly Innovations, Inc.",
+    "Sky Agent is an independent fork of OpenCode. It is not affiliated with or endorsed by OpenCode or Anomaly Innovations, Inc.",
   "settings.about.manualUpdates":
-    "Automatic updates are disabled. Install updates manually from a trusted Square Agent build.",
+    "Automatic updates are disabled. Install updates manually from a trusted Sky Agent build.",
   "settings.about.writtenByNames": "Written by {{names}}",
   "settings.about.illustratedByNames": "Illustrated by {{names}}",
   "settings.about.otherContributor.one": "{{count}} other",
@@ -897,6 +897,7 @@ export const dict = {
   "settings.about.notices.description": "OpenCode includes the following open source software.",
   "settings.about.notices.license": "License text",
   "settings.about.notices.fonts.title": "Fonts in the Office previews",
+  "settings.about.notices.fonts.bundledTitle": "Bundled fonts",
   "settings.about.notices.fonts.description":
     "Each family is distributed under the SIL Open Font License 1.1, with the copyright lines below.",
   "settings.about.notices.eigenpal": "Portions of BetterOffice derive from it.",

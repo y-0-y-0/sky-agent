@@ -30,7 +30,7 @@ export function nativeT(key: DesktopNativeKey, params?: Record<string, string | 
   const template =
     key === "desktop.menu.documentation"
       ? bundle.messages[key]
-      : bundle.messages[key].replaceAll("OpenCode", "Square Agent")
+      : bundle.messages[key].replaceAll("OpenCode", "Sky Agent")
 
   return formatDesktopNativeMessage(template, params)
 }

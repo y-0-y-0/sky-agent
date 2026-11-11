@@ -32,7 +32,7 @@ const getBase = (appId: string): Configuration => {
   return {
     artifactName: `${brand.packageName}-\${os}-\${arch}.\${ext}`,
     executableName: brand.packageName,
-    // No Square Agent update service is configured. Never infer a GitHub feed.
+    // No fork update service is configured. Never infer a GitHub feed.
     publish: null,
     directories: {
       output: "dist",
@@ -41,9 +41,9 @@ const getBase = (appId: string): Configuration => {
     extraMetadata: {
       desktopName,
       name: brand.packageName,
-      description: "Square Agent — an independent OpenCode desktop fork",
-      homepage: "https://github.com/y-0-y-0/square-agent",
-      author: "Square Agent contributors",
+      description: "Sky Agent — an independent OpenCode desktop fork",
+      homepage: "https://github.com/y-0-y-0/sky-agent",
+      author: "Sky Agent contributors",
       ...(process.env.OPENCODE_VERSION ? { version: process.env.OPENCODE_VERSION } : {}),
     },
     files: [
@@ -155,6 +155,9 @@ const getBase = (appId: string): Configuration => {
       include: path.join(packageDir, "resources", "windows", "installer.nsh"),
       oneClick: true,
       perMachine: false,
+      shortcutName: brand.name,
+      createDesktopShortcut: true,
+      createStartMenuShortcut: true,
       installerIcon: `resources/icons/icon.ico`,
       installerHeaderIcon: `resources/icons/icon.ico`,
     },
@@ -162,7 +165,7 @@ const getBase = (appId: string): Configuration => {
       icon: `resources/icons`,
       category: "Development",
       // Do not reuse the upstream author's email as the fork's package contact.
-      maintainer: "Square Agent contributors",
+      maintainer: "Sky Agent contributors",
       executableName: brand.packageName,
       // The executable must not end in .desktop (AppImageLauncher globs that suffix).
       syncDesktopName: true,

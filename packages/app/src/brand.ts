@@ -1,6 +1,6 @@
 export const IS_SQUARE_AGENT = import.meta.env.VITE_SQUARE_AGENT === "1"
 
-export const PRODUCT_NAME = IS_SQUARE_AGENT ? "Square Agent" : "OpenCode"
+export const PRODUCT_NAME = IS_SQUARE_AGENT ? "Sky Agent" : "OpenCode"
 
 export const PRODUCT_LOGO = new URL("./assets/square-agent-display.png", import.meta.url).href
 
@@ -27,5 +27,5 @@ const productKeys = new Set([
 ])
 
 export function productMessage(key: string, template: string) {
-  return IS_SQUARE_AGENT && productKeys.has(key) ? template.replaceAll("OpenCode", "Square Agent") : template
+  return IS_SQUARE_AGENT && productKeys.has(key) ? template.replaceAll("OpenCode", PRODUCT_NAME) : template
 }
