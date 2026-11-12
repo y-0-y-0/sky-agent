@@ -72,6 +72,7 @@ describe("OptimizePlugin", () => {
       yield* Effect.forEach(OptimizePlugin.Plugins, (plugin) => plugin.effect(pluginHost), {
         discard: true,
       })
+      yield* IdentityPlugin.Plugin.effect(pluginHost)
       const cases = [
         ["gpt-5", PROMPT_GPT],
         ["gpt-4.1", PROMPT_GPT],
@@ -90,20 +91,23 @@ describe("OptimizePlugin", () => {
 
       yield* Effect.forEach(
         cases,
-        ([id, expected]) => {
-          const event = context(id)
-          return hooks
-            .trigger("session", "context", event)
-            .pipe(
-              Effect.tap(() =>
-                Effect.sync(() =>
-                  expect(event.system.map((part) => part.text)).toEqual([
-                    SessionSystemPrompt.render(expected, Object.keys(event.tools)),
-                  ]),
-                ),
-              ),
-            )
-        },
+        ([id, expected]) =>
+          Effect.gen(function* () {
+            for (const kind of ["context", "generate", "compaction"] as const) {
+              const event = context(id)
+              event.system.push(SystemPart.make("Project instructions"))
+              yield* hooks.trigger("session", kind, event)
+              expect(event.system[0]?.text).toBe(SessionSystemPrompt.render(expected, Object.keys(event.tools)))
+              expect(event.system[0]?.text).toContain("Sky Agent")
+              expect(event.system[0]?.text).toContain("fork of OpenCode")
+              expect(event.system[0]?.text).toContain("model or provider, answer honestly")
+              expect(event.system[0]?.text).not.toMatch(/You are (?:OpenCode|opencode)\b/)
+              expect(event.system[0]?.text).not.toContain("trained by Meta MSL")
+              expect(event.system[1]?.text).toContain(`- Model ID: ${id}`)
+              expect(event.system[1]?.text).toContain("- Provider ID: test")
+              expect(event.system[2]?.text).toBe("Project instructions")
+            }
+          }),
         { discard: true },
       )
     }),

@@ -118,6 +118,13 @@ export const baseTranscript = (input: {
           ? input.agent.system
           : SessionSystemPrompt.make(input.tools.definitions.map((tool) => tool.name)),
       ),
+      ...(input.agent.system
+        ? [
+            SystemPart.make(
+              "You are Sky Agent, an AI development assistant. If asked about your origins, explain that Sky Agent is a fork of OpenCode. If asked about your model or provider, answer honestly based on available information; do not guess.",
+            ),
+          ]
+        : []),
       {
         ...SystemPart.make(Instructions.join(input.initial)),
         metadata: { experimental: { instructions: input.initial } },

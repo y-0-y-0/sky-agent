@@ -390,6 +390,8 @@ describe("Claude sessions", () => {
       const branch = claude.runs[1]!.received.find((message) => message.request?.subtype === "initialize").request
       expect(chat.sdkMcpServers).toEqual(["opencode"])
       expect(branch.sdkMcpServers).toEqual(chat.sdkMcpServers)
+      expect(chat.appendSystemPrompt).toContain("Sky Agent")
+      expect(chat.appendSystemPrompt).toContain("OpenCode")
       expect(chat.appendSystemPrompt).toContain("AGENT-ROLE")
       expect(chat.appendSystemPrompt).toContain("OPENCODE-INSTRUCTIONS")
       expect(branch.appendSystemPrompt).toBe(chat.appendSystemPrompt)

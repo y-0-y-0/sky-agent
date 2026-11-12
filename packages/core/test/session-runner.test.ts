@@ -2052,6 +2052,7 @@ describe("SessionRunnerLLM", () => {
     expect(s.requests.at(-1)?.system.map((part) => part.text)).toEqual([
       "Build agent instructions",
       fakeIdentity,
+      expect.stringContaining("You are Sky Agent"),
       "Initial context",
     ])
   })
@@ -2077,6 +2078,7 @@ describe("SessionRunnerLLM", () => {
     expect(s.requests.at(-1)?.system.map((part) => part.text)).toEqual([
       "Reviewer instructions",
       fakeIdentity,
+      expect.stringContaining("You are Sky Agent"),
       "Initial context",
     ])
     expect((yield* s.messages)[0]).toMatchObject({ type: "assistant", agent: "reviewer" })
@@ -2104,6 +2106,7 @@ describe("SessionRunnerLLM", () => {
     expect(s.requests.at(-1)?.system.map((part) => part.text)).toEqual([
       "Reviewer instructions",
       fakeIdentity,
+      expect.stringContaining("You are Sky Agent"),
       "Initial context",
     ])
     expect((yield* s.messages)[0]).toMatchObject({ type: "assistant", agent: "reviewer" })

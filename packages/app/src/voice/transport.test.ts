@@ -149,15 +149,19 @@ type Voice = OpenCodeClient["experimental"]["voice"]
 const live = { model: "gpt-live-1", provider: "openai", available: true, transports: ["webrtc" as const] }
 
 function open(models: Voice["models"] = () => Promise.resolve({ models: [live] })) {
+  const session = jest.fn((_input: Parameters<Voice["session"]>[0]) =>
+    Promise.resolve({ transport: { type: "webrtc" as const, sdp: "v=0 answer" } }),
+  )
+
   const voice: Voice = {
     models,
-    session: () => Promise.resolve({ transport: { type: "webrtc", sdp: "v=0 answer" } }),
+    session,
   }
 
   const dropped = jest.fn()
   const transport = new VoiceTransport({ voice, event: () => {}, levels: () => {}, dropped })
 
-  return { transport, dropped, peer: FakePeer.last }
+  return { transport, dropped, peer: FakePeer.last, session }
 }
 
 // Lets the transport's awaited WebRTC calls settle; fake timers leave promise jobs alone.
@@ -181,6 +185,24 @@ const failure = (promise: Promise<unknown>) =>
     () => undefined,
     (error: VoiceFailure) => error.reason,
   )
+
+test("voice negotiation identifies Sky Agent and preserves delegation", async () => {
+  const result = await connected()
+  const instructions = result.session.mock.calls[0]?.[0].session?.instructions
+  expect(instructions).toContain("session models")
+  expect(instructions).toContain("your own voice model or provider can be answered directly")
+  expect(result.session.mock.calls[0]?.[0]).toMatchObject({
+    session: {
+      instructions: expect.stringContaining("Sky Agent"),
+      delegation: {
+        responses: {
+          instructions: expect.stringContaining("Sky Agent"),
+          tools: expect.arrayContaining([expect.objectContaining({ name: "send_message" })]),
+        },
+      },
+    },
+  })
+})
 
 test("a microphone granted after End is stopped at once, and the join fails as a connection failure", async () => {
   const result = open()

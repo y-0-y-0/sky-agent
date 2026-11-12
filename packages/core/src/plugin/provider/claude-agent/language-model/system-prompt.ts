@@ -12,7 +12,7 @@ const primary = {
   // Agent changes must take effect when a process resumes the same native session.
   snapshot: false,
   append:
-    "<runtime_info>You are running in OpenCode through the Claude Code harness. Mention this only when asked.</runtime_info>",
+    "<runtime_info>You are Sky Agent, an AI development assistant running through the Claude Code harness. If asked about your origins, explain that Sky Agent is a fork of OpenCode. If asked about your model or provider, answer honestly based on available information; do not guess. Mention the harness only when asked.</runtime_info>",
 } satisfies Options["systemPrompt"]
 
 export function make(role?: string, instructions?: string) {
